@@ -4,11 +4,27 @@
   <meta charset="UTF-8" />
   <title>Kiro - Envío de ubicación e info dispositivo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+   <style>
+    .spinner {
+      margin: 20px auto;
+      width: 40px;
+      height: 40px;
+      border: 5px solid #ccc;
+      border-top-color: #00aaff; /* color celeste */
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body style="font-family: Arial, sans-serif; text-align: center; padding: 20px;">
   <h2>¡Gracias por encontrar a Kiro!🧡</h2>
     <p>Serás redirigido automáticamente. Por favor, espera unos segundos...</p>
 
+    <div class="spinner"></div>
+  
 <script>
   function parseUserAgent(ua) {
     ua = ua.toLowerCase();
@@ -137,5 +153,6 @@
 </script>
 </body>
 </html>
+
 
 
