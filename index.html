@@ -1,19 +1,65 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Kiro - Envío de ubicación</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <title>Kiro - Envío de ubicación e info dispositivo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 <body style="font-family: Arial, sans-serif; text-align: center; padding: 20px;">
-
-<h2>¡Gracias por encontrar a Kiro!🧡</h2>
-<p>Nos ayudaría mucho para localizarlo más rápido.</p>
+    <h2>¡Gracias por encontrar a Kiro!🧡</h2>
+    <p>Por favor, acepta compartir tu ubicación solo un momento. 
+    Nos ayudaría mucho para localizar a Kiro</p>
 
 <script>
+function parseUserAgent(ua) {
+    ua = ua.toLowerCase();
+
+    let marcaModelo = "Desconocido";
+    let so = "Desconocido";
+
+    // Detectar sistema operativo
+    if (/android/.test(ua)) {
+        so = "Android";
+    } else if (/iphone|ipad|ipod/.test(ua)) {
+        so = "iOS";
+    } else if (/windows phone/.test(ua)) {
+        so = "Windows Phone";
+    } else if (/windows/.test(ua)) {
+        so = "Windows";
+    } else if (/mac os/.test(ua)) {
+        so = "Mac OS";
+    } else if (/linux/.test(ua)) {
+        so = "Linux";
+    }
+
+    // Detectar marca/modelo (muy básico)
+    if (/samsung/.test(ua)) {
+        marcaModelo = "Samsung";
+    } else if (/huawei/.test(ua)) {
+        marcaModelo = "Huawei";
+    } else if (/iphone/.test(ua)) {
+        marcaModelo = "iPhone";
+    } else if (/ipad/.test(ua)) {
+        marcaModelo = "iPad";
+    } else if (/xiaomi/.test(ua)) {
+        marcaModelo = "Xiaomi";
+    } else if (/oneplus/.test(ua)) {
+        marcaModelo = "OnePlus";
+    } else if (/pixel/.test(ua)) {
+        marcaModelo = "Google Pixel";
+    } else if (/motorola/.test(ua)) {
+        marcaModelo = "Motorola";
+    }
+
+    return { marcaModelo, so };
+}
+
 function enviarUbicacion(lat, lon) {
     const linkGoogleMaps = `https://www.google.com/maps?q=${lat},${lon}`;
-    const mensaje = `El collar de Kiro acaba de ser escaneado y ha sido encontrado en la siguiente ubicación:\n${linkGoogleMaps}`;
+
+    const uaInfo = parseUserAgent(navigator.userAgent);
+
+    const mensaje = `El collar de Kiro acaba de ser escaneado y ha sido encontrado en la siguiente ubicación:\n${linkGoogleMaps}\n\nInformación del dispositivo:\nMarca/Modelo: ${uaInfo.marcaModelo}\nSistema operativo: ${uaInfo.so}`;
 
     fetch("https://formspree.io/f/meozvdjo", {
         method: "POST",
@@ -27,7 +73,7 @@ function enviarUbicacion(lat, lon) {
         })
     })
     .then(response => {
-        console.log("Ubicación enviada con éxito");
+        console.log("Ubicación e info enviada con éxito");
         window.location.href = "https://sites.google.com/view/kiromunozslimming";
     })
     .catch(error => {
@@ -59,4 +105,3 @@ obtenerUbicacion();
 
 </body>
 </html>
-
